@@ -2,6 +2,7 @@
   "name": "selvinortiz/collective",
   "description": "Simple collection implementation on top of native arrays",
   "license": "MIT",
+  "keywords": ["collective", "collection", "array"],
   "authors": [
     {
       "name": "Selvin Ortiz",
