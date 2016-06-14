@@ -10,60 +10,81 @@ Simple collection implementation on top of native arrays.
 composer require selvinortiz/collective
 ```
 
+### Running Tests
+```sh
+composer install
+sh spec.sh
+```
+
 ### Usage
 ```php
-$arr = new Collective([1, 101, 666, 'Brad', 'Brandon', 'Matt']);
+$items = new Collective([256, 512, 1024, 'Brad', 'Brandon', 'Matt']);
 ```
 
 #### `count()`
 ```php
-$arr->count();
+$items->count();
 // 6
 ```
 
 #### `first()`
 ```php
-$arr->first();
-// 1
-$arr->first(function($value)
+$items->first();
+// 256
+$items->first(function($item)
 {
-    return stripos($value, 'Bra') !== false;
+    return stripos($item, 'Bra') !== false;
 });
 // Brad
 ```
 
 #### `last()`
 ```php
-$arr->last(); 
+$items->last(); 
 // 'Matt'
-$arr->last(function($value)
+$items->last(function($item)
 {
-    return stripos($value, 'Bra') !== false;
+    return stripos($item, 'Bra') !== false;
 });
 // Brandon
 ```
 
 #### `filter()`
+Filters each item in the collection using your own _callable_
+
 ```php
-$arr->filter(function($value)
+$items->filter(function($item)
 {
-    return is_numeric($value);
+    return is_numeric($item);
 })->toArray();
-// 1, 101, 666
+// 256, 512, 1024
 ```
 
 #### `apply()`
+Applies your _callable_ to each item in the collection
+
 ```php
-$arr->apply(function($value)
+$items->apply(function($item)
 {
-    return is_string($value) ? '- '.$value : $value;
+    return is_string($item) ? '- '.$item : $item;
 })->toArray();
-// 1, 101, 666, '- Brad', '- Brandon', '- Matt'
+// 256, 512, 1024, '- Brad', '- Brandon', '- Matt'
 ```
 
+#### `then()`
+Chains functions not defined by the _collection_ without breaking the _pipe_
 
-## Running Tests
-```sh
-composer install
-sh spec.sh
+```php
+function filterToStrings($items)
+{
+	return $items->filter(function ($item) { return is_string($item); });
+}
+
+function fourCharsOnly($items)
+{
+	return $items->filter(function ($item) { return strlen($item) == 4; });
+}
+
+$items->then('filterToStrings')->then('filterToLength')->toArray();
+// 'Brad', 'Matt'
 ```

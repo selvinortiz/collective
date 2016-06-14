@@ -9,7 +9,7 @@ use SelvinOrtiz\Collective\Behavior\Serializable;
 /**
  * Class Collective
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @package SelvinOrtiz\Collective
  */
 class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
@@ -34,6 +34,11 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
 		$this->input = $input;
 	}
 
+	/**
+	 * Returns the native array used to seed this collective
+	 *
+	 * @return array
+	 */
 	public function toArray()
 	{
 		return $this->input;
@@ -84,6 +89,12 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
 		}
 	}
 
+	/**
+	 * @param callable $callback
+	 * @param bool     $keepKeys
+	 *
+	 * @return static
+	 */
 	public function apply(callable $callback, $keepKeys = false)
 	{
 		$values = array_map($callback, $this->input);
@@ -102,6 +113,17 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
 		$values = array_filter($this->input, $callback);
 
 		return new static($keepKeys ? $values : array_values($values));
+	}
+
+	/**
+	 * @param callable $callback
+	 *
+	 * @since 0.2.0
+	 * @return mixed
+	 */
+	public function then(callable $callback)
+	{
+		return $callback($this);
 	}
 
 	/**
