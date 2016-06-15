@@ -18,7 +18,21 @@ sh spec.sh
 
 ### Usage
 ```php
+// Sample collection for all methods except get() and set()
 $items = new Collective([256, 512, 1024, 'Brad', 'Brandon', 'Matt']);
+```
+#### `get()`
+```php
+$items = new Collective(['user' => ['name' => 'Brad']]);
+$items->get('users.name');
+// 'Brad'
+```
+
+#### `set()`
+```php
+$items = new Collection();
+$items->set('users.name', 'Matt')->toArray();
+// ['users' => ['name' => 'Matt']]
 ```
 
 #### `count()`
@@ -60,7 +74,7 @@ $items->filter(function($item)
 // 256, 512, 1024
 ```
 
-#### `apply()`
+#### `map()`
 Applies your _callable_ to each item in the collection
 
 ```php
