@@ -1,6 +1,6 @@
 <?php
-namespace SelvinOrtiz\Collective\Behavior;
 
+namespace SelvinOrtiz\Collective\Behavior;
 
 /**
  * Class Countable
@@ -11,11 +11,11 @@ namespace SelvinOrtiz\Collective\Behavior;
  */
 trait Countable
 {
-	/**
-	 * @return int
-	 */
-	public function count()
-	{
-		return count($this->input);
-	}
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->input);
+    }
 }

@@ -1,139 +1,202 @@
 <?php
+
 namespace SelvinOrtiz\Collective;
 
 use SelvinOrtiz\Collective\Behavior\Arrayable;
 use SelvinOrtiz\Collective\Behavior\Countable;
 use SelvinOrtiz\Collective\Behavior\Traversable;
 use SelvinOrtiz\Collective\Behavior\Serializable;
+use SelvinOrtiz\Collective\Helpers\Dot;
 
 /**
  * Class Collective
  *
- * @version 0.2.0
+ * @version 0.3.0
  * @package SelvinOrtiz\Collective
  */
 class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
 {
-	/**
-	 * @var array
-	 */
-	protected $input;
+    /**
+     * @var array
+     */
+    protected $input;
 
-	use Arrayable;
-	use Countable;
-	use Traversable;
-	use Serializable;
+    use Arrayable;
+    use Countable;
+    use Traversable;
+    use Serializable;
 
-	/**
-	 * Collective constructor.
-	 *
-	 * @param array $input
-	 */
-	public function __construct(array $input = [])
-	{
-		$this->input = $input;
-	}
+    /**
+     * Collective constructor.
+     *
+     * @param array $input
+     */
+    public function __construct(array $input = [])
+    {
+        $this->input = $input;
+    }
 
-	/**
-	 * Returns the native array used to seed this collective
-	 *
-	 * @return array
-	 */
-	public function toArray()
-	{
-		return $this->input;
-	}
+    /**
+     * @param $key
+     *
+     * @return mixed|null
+     */
+    public function __get($key)
+    {
+        return array_key_exists($key, $this->input) ? $this->input[$key] : null;
+    }
 
-	/**
-	 * Returns the first item in the collection
-	 *
-	 * @param callable $callback
-	 *
-	 * @return mixed
-	 */
-	public function first(callable $callback = null)
-	{
-		$callback = $callback ?: $this->callbackReturnValue();
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return $this
+     */
+    public function __set($key, $value)
+    {
+        $this->input[$key] = $value;
 
-		foreach ($this->input as $index => $value)
-		{
-			if ($callback($value, $index))
-			{
-				return $value;
-			}
-		}
-	}
+        return $this;
+    }
 
-	/**
-	 * Returns the last item in the collection
-	 *
-	 * @param callable $callback
-	 *
-	 * @return mixed
-	 */
-	public function last(callable $callback = null)
-	{
-		if ($callback === null)
-		{
-			$input = array_slice($this->input, -1);
+    /**
+     * Gets a value by key in the collection using dot notation
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function get($key, $default = null)
+    {
+        return Dot::get($this->input, $key, $default);
+    }
 
-			return array_pop($input);
-		}
+    /**
+     * Sets a value by key in the collection using dot notation
+     *
+     * @param $key
+     * @param $value
+     *
+     * @return $this
+     */
+    public function set($key, $value)
+    {
+        Dot::set($this->input, $key, $value);
 
-		foreach (array_reverse($this->input) as $index => $value)
-		{
-			if ($callback($value, $index))
-			{
-				return $value;
-			}
-		}
-	}
+        return $this;
+    }
 
-	/**
-	 * @param callable $callback
-	 * @param bool     $keepKeys
-	 *
-	 * @return static
-	 */
-	public function apply(callable $callback, $keepKeys = false)
-	{
-		$values = array_map($callback, $this->input);
+    /**
+     * Returns the native array used to seed this collective
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->input;
+    }
 
-		return new static($keepKeys ? $values : array_values($values));
-	}
+    /**
+     * Returns the first item in the collection
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function first(callable $callback = null)
+    {
+        $callback = $callback ?: $this->callbackReturnValue();
 
-	/**
-	 * @param callable $callback
-	 * @param bool     $keepKeys
-	 *
-	 * @return Collective
-	 */
-	public function filter(callable $callback, $keepKeys = false)
-	{
-		$values = array_filter($this->input, $callback);
+        foreach ($this->input as $index => $value) {
+            if ($callback($value, $index)) {
+                return $value;
+            }
+        }
+    }
 
-		return new static($keepKeys ? $values : array_values($values));
-	}
+    /**
+     * Returns the last item in the collection
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function last(callable $callback = null)
+    {
+        if ($callback === null) {
+            $input = array_slice($this->input, -1);
 
-	/**
-	 * @param callable $callback
-	 *
-	 * @since 0.2.0
-	 * @return mixed
-	 */
-	public function then(callable $callback)
-	{
-		return $callback($this);
-	}
+            return array_pop($input);
+        }
 
-	/**
-	 * @return callable
-	 */
-	public function callbackReturnValue()
-	{
-		return function ($value)
-		{
-			return $value;
-		};
-	}
+        foreach (array_reverse($this->input) as $index => $value) {
+            if ($callback($value, $index)) {
+                return $value;
+            }
+        }
+    }
+
+    /**
+     * Applies the callback to each item in the collection
+     *
+     * @param  callable $callback
+     *
+     * @return static
+     */
+    public function map(callable $callback)
+    {
+        if (empty($this->input)) {
+            return new static();
+        }
+
+        $values = [];
+
+        foreach ($this->input as $key => $item) {
+            $values[$key] = $callback($item, $key);
+        }
+
+        return new static($values);
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return Collective
+     */
+    public function filter(callable $callback)
+    {
+        $values = array_filter($this->input, $callback);
+
+        return new static($values);
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @since 0.2.0
+     * @return mixed
+     */
+    public function then(callable $callback)
+    {
+        return $callback($this);
+    }
+
+    /**
+     * @return static
+     */
+    public function resetKeys()
+    {
+        return new static(array_values($this->input));
+    }
+
+    /**
+     * @return callable
+     */
+    public function callbackReturnValue()
+    {
+        return function ($value) {
+            return $value;
+        };
+    }
 }

@@ -1,6 +1,6 @@
 <?php
-namespace SelvinOrtiz\Collective\Behavior;
 
+namespace SelvinOrtiz\Collective\Behavior;
 
 /**
  * Class Serializable
@@ -11,13 +11,13 @@ namespace SelvinOrtiz\Collective\Behavior;
  */
 trait Serializable
 {
-	public function serialize()
-	{
-		return serialize($this->input);
-	}
+    public function serialize()
+    {
+        return serialize($this->input);
+    }
 
-	public function unserialize($input)
-	{
-		$this->input = unserialize($input);
-	}
+    public function unserialize($input)
+    {
+        $this->input = unserialize($input);
+    }
 }
