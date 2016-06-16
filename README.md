@@ -4,7 +4,7 @@
 > _Collective_ is a lightweight library that allows you to interact with native arrays in a more flexible and elegant way. It is inpired by _Laravel Collections_ and focused on performance.
 
 ### Requirements
-- PHP 5.4
+- PHP 5.5
 - [Composer](http://getcomposer.org) and [selvinortiz/collective](https://packagist.org/packages/selvinortiz/collective)
 
 ### Install
@@ -152,6 +152,8 @@ function fourCharsOnly($collective)
 $collective->then('filterToStrings')->then('filterToLength')->toArray();
 // 'Brad', 'Matt'
 ```
+
+---
 
 ### License
 **Collective** is open source software licensed under the **MIT License**
