@@ -35,7 +35,7 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Gets a value by key in the collection using dot notation
+     * Returns $default or an item by key in the collection using dot notation
      *
      * @param string $key
      * @param mixed  $default
@@ -48,7 +48,7 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Sets a value by key in the collection using dot notation
+     * Sets a item by key in the collection using dot notation
      *
      * @param $key
      * @param $value
@@ -63,7 +63,7 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Returns all keys for elements in the collection
+     * Returns all keys for items in the collection
      *
      * @return static
      */
@@ -73,7 +73,10 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
+     * Returns all items in the collection with their keys reset
+     *
      * @since 0.3.0
+     *
      * @return static
      */
     public function values()
@@ -82,7 +85,7 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Returns the first item in the collection
+     * Returns $default or the first item in the collection
      *
      * @param callable $callback
      * @param mixed    $default
@@ -109,7 +112,7 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Returns the last item in the collection
+     * Returns $default or the last item in the collection
      *
      * @param callable $callback
      * @param mixed    $default
@@ -130,7 +133,7 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Applies the callback to each item in the collection
+     * Returns static($default) or all items in the collection after applying $callback
      *
      * @param callable $callback
      * @param array    $default
@@ -153,6 +156,8 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
+     * Returns static($default) or all filtered items in the collection
+     *
      * @param callable $callback
      * @param array    $default
      *
@@ -176,15 +181,16 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * @param  callable  $callback
-     * @param  mixed     $initial
+     * Returns a single value obtained from reduction all items in the collection
+     *
+     * @param  callable $callback
+     * @param  mixed    $initial
      *
      * @return mixed
      */
     public function reduce(callable $callback, $initial = null)
     {
-        foreach ($this->input as $key => $value)
-        {
+        foreach ($this->input as $key => $value) {
             $initial = $callback($value, $initial, $key);
         }
 
@@ -192,6 +198,8 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
+     * Returns a collection with items in reversed order
+     *
      * @return static
      */
     public function reverse()
@@ -200,6 +208,38 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
+     * Flattens all items into a single level collection
+     *
+     * @param $depth
+     *
+     * @return static
+     */
+    public function flatten($depth = INF)
+    {
+        $result = [];
+
+        foreach ($this->input as $key => $value) {
+            if (is_array($value)) {
+                if (1 === $depth) {
+                    $result = array_merge($result, $value);
+                } else {
+                    /**
+                     * @var static $value
+                     */
+                    $value  = (new static($value))->flatten($depth - 1);
+                    $result = array_merge($result, $value->toArray());
+                }
+            } else {
+                $result[] = $value;
+            }
+        }
+
+        return new static($result);
+    }
+
+    /**
+     * Enables other functions to be piped through without breaking the chain
+     *
      * @param callable $callback
      *
      * @since 0.2.0

@@ -40,6 +40,22 @@ class CollectiveTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual);
     }
 
+    public function test_keys()
+    {
+        $input  = ['user', 'name' => 'Brad', 'email' => 'brad@domain.com'];
+        $expect = [0, 'name', 'email'];
+
+        $this->assertEquals($expect, $this->make($input)->keys()->toArray());
+    }
+
+    public function test_values()
+    {
+        $input  = ['user', 'name' => 'Brad', 'email' => 'brad@mrangrypants.io'];
+        $expect = ['user', 'Brad', 'brad@mrangrypants.io'];
+
+        $this->assertEquals($expect, $this->make($input)->values()->toArray());
+    }
+
     public function test_first()
     {
         $input    = ['Brad', 'Brandon', 'Matt'];
@@ -112,20 +128,23 @@ class CollectiveTest extends PHPUnit_Framework_TestCase
         $this->assertEquals([512, 256, 128], $this->make([128, 256, 512])->reverse()->toArray());
     }
 
-    public function test_keys()
+    public function test_flatten()
     {
-        $input  = ['user', 'name' => 'Brad', 'email' => 'brad@domain.com'];
-        $expect = [0, 'name', 'email'];
+        $input = [
+            'level1' => [
+                'name'   => 'Level 1',
+                'level2' => [
+                    'name'   => 'Level 2',
+                    'level3' => [
+                        'name' => 'Level 3'
+                    ]
+                ]
+            ]
+        ];
 
-        $this->assertEquals($expect, $this->make($input)->keys()->toArray());
-    }
+        $expect = ['Level 1', 'Level 2', 'Level 3'];
 
-    public function test_values()
-    {
-        $input  = ['user', 'name' => 'Brad', 'email' => 'brad@mrangrypants.io'];
-        $expect = ['user', 'Brad', 'brad@mrangrypants.io'];
-
-        $this->assertEquals($expect, $this->make($input)->values()->toArray());
+        $this->assertEquals($expect, $this->make($input)->flatten()->toArray());
     }
 
     public function test_then()

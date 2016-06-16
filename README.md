@@ -1,5 +1,9 @@
 ![Collective](Collective.png)
 
+[![Build Status](https://travis-ci.org/selvinortiz/collective.png)](https://travis-ci.org/selvinortiz/collective)
+[![Total Downloads](https://poser.pugx.org/selvinortiz/collective/d/total.png)](https://packagist.org/packages/selvinortiz/collective)
+[![Latest Stable Version](https://poser.pugx.org/selvinortiz/collective/v/stable.png)](https://packagist.org/packages/selvinortiz/collective)
+
 ## Description
 > _Collective_ is a lightweight library that allows you to interact with native arrays in a more flexible and elegant way. It is inpired by _Laravel Collections_ and focused on performance.
 
@@ -135,17 +139,33 @@ $callback = function ($value, $carry) {
 // [512, 256, 128]
 ```
 
+#### `flatten($depth = INF)`
+```php
+$input = [
+    'level1' => [
+        'name'   => 'Level 1',
+        'level2' => [
+            'name'   => 'Level 2',
+            'level3' => [
+                'name' => 'Level 3'
+            ]
+        ]
+    ]
+];
+
+(new Collective($input))->flatten()->toArray();
+// ['Level 1', 'Level 2', 'Level 3']
+```
+
 #### `then(callable $callback)`
 Chains functions not defined by the _collection_ without breaking the _pipe_
 
 ```php
-function filterToStrings($collective)
-{
+function filterToStrings($collective) {
     return $collective->filter(function ($value) { return is_string($value); });
 }
 
-function fourCharsOnly($collective)
-{
+function fourCharsOnly($collective) {
     return $collective->filter(function ($value) { return strlen($value) == 4; });
 }
 
