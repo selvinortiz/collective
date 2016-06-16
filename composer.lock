@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "300d0fe4d2fea133b504d838d794c818",
-    "content-hash": "669ec735469d55c38d88ea2d6f2f377e",
+    "hash": "ab89bcc3a7ca49caabfe73b12996ed78",
+    "content-hash": "c8c98d5336767dbdfc9d3325cfd05950",
     "packages": [],
     "packages-dev": [
         {
@@ -1014,16 +1014,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.1.0",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "eca51b7b65eb9be6af88ad7cc91685f1556f5c9a"
+                "reference": "c5a7e7fc273c758b92b85dcb9c46149ccda89623"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/eca51b7b65eb9be6af88ad7cc91685f1556f5c9a",
-                "reference": "eca51b7b65eb9be6af88ad7cc91685f1556f5c9a",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/c5a7e7fc273c758b92b85dcb9c46149ccda89623",
+                "reference": "c5a7e7fc273c758b92b85dcb9c46149ccda89623",
                 "shasum": ""
             },
             "require": {
@@ -1059,7 +1059,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-05-26 21:46:24"
+            "time": "2016-06-14 11:18:07"
         },
         {
             "name": "webmozart/assert",
@@ -1117,7 +1117,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.0"
+        "php": ">=5.4.0"
     },
     "platform-dev": []
 }

@@ -38,8 +38,6 @@ class Dot
      * @param array  $arr
      * @param string $key
      * @param array  $value
-     *
-     * @return array
      */
     public static function set(&$arr, $key, $value)
     {

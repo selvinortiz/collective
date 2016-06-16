@@ -11,7 +11,7 @@ use SelvinOrtiz\Collective\Helpers\Dot;
 /**
  * Class Collective
  *
- * @version 0.3.0
+ * @version 0.4.0
  * @package SelvinOrtiz\Collective
  */
 class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
@@ -27,36 +27,11 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     use Serializable;
 
     /**
-     * Collective constructor.
-     *
      * @param array $input
      */
     public function __construct(array $input = [])
     {
         $this->input = $input;
-    }
-
-    /**
-     * @param $key
-     *
-     * @return mixed|null
-     */
-    public function __get($key)
-    {
-        return array_key_exists($key, $this->input) ? $this->input[$key] : null;
-    }
-
-    /**
-     * @param $key
-     * @param $value
-     *
-     * @return $this
-     */
-    public function __set($key, $value)
-    {
-        $this->input[$key] = $value;
-
-        return $this;
     }
 
     /**
@@ -88,87 +63,140 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     }
 
     /**
-     * Returns the native array used to seed this collective
+     * Returns all keys for elements in the collection
      *
-     * @return array
+     * @return static
      */
-    public function toArray()
+    public function keys()
     {
-        return $this->input;
+        return new static(array_keys($this->input));
+    }
+
+    /**
+     * @since 0.3.0
+     * @return static
+     */
+    public function values()
+    {
+        return new static(array_values($this->input));
     }
 
     /**
      * Returns the first item in the collection
      *
      * @param callable $callback
+     * @param mixed    $default
      *
      * @return mixed
      */
-    public function first(callable $callback = null)
+    public function first(callable $callback = null, $default = null)
     {
-        $callback = $callback ?: $this->callbackReturnValue();
+        if (empty($this->input)) {
+            return $default;
+        }
 
-        foreach ($this->input as $index => $value) {
-            if ($callback($value, $index)) {
+        if (null === $callback) {
+            return reset($this->input);
+        }
+
+        foreach ($this->input as $key => $value) {
+            if ($callback($value, $key)) {
                 return $value;
             }
         }
+
+        return $default;
     }
 
     /**
      * Returns the last item in the collection
      *
      * @param callable $callback
+     * @param mixed    $default
      *
      * @return mixed
      */
-    public function last(callable $callback = null)
+    public function last(callable $callback = null, $default = null)
     {
-        if ($callback === null) {
-            $input = array_slice($this->input, -1);
-
-            return array_pop($input);
+        if (empty($this->input)) {
+            return $default;
         }
 
-        foreach (array_reverse($this->input) as $index => $value) {
-            if ($callback($value, $index)) {
-                return $value;
-            }
+        if (null === $callback) {
+            return end($this->input);
         }
+
+        return (new static(array_reverse($this->input)))->first($callback, $default);
     }
 
     /**
      * Applies the callback to each item in the collection
      *
-     * @param  callable $callback
+     * @param callable $callback
+     * @param array    $default
      *
      * @return static
      */
-    public function map(callable $callback)
+    public function map(callable $callback, array $default = [])
     {
         if (empty($this->input)) {
-            return new static();
+            return new static($default);
         }
 
-        $values = [];
+        $result = [];
 
-        foreach ($this->input as $key => $item) {
-            $values[$key] = $callback($item, $key);
+        foreach ($this->input as $key => $value) {
+            $result[$key] = $callback($value, $key);
         }
 
-        return new static($values);
+        return new static(empty($result) ? $default : $result);
     }
 
     /**
      * @param callable $callback
+     * @param array    $default
      *
-     * @return Collective
+     * @return static
      */
-    public function filter(callable $callback)
+    public function filter(callable $callback = null, array $default = [])
     {
-        $values = array_filter($this->input, $callback);
+        if (null === $callback) {
+            return new static(array_filter($this->input));
+        }
 
-        return new static($values);
+        $result = [];
+
+        foreach ($this->input as $key => $value) {
+            if ($callback($value, $key)) {
+                $result[$key] = $value;
+            }
+        }
+
+        return new static(empty($result) ? $default : $result);
+    }
+
+    /**
+     * @param  callable  $callback
+     * @param  mixed     $initial
+     *
+     * @return mixed
+     */
+    public function reduce(callable $callback, $initial = null)
+    {
+        foreach ($this->input as $key => $value)
+        {
+            $initial = $callback($value, $initial, $key);
+        }
+
+        return $initial;
+    }
+
+    /**
+     * @return static
+     */
+    public function reverse()
+    {
+        return new static(array_reverse($this->input));
     }
 
     /**
@@ -180,23 +208,5 @@ class Collective implements \ArrayAccess, \Countable, \Iterator, \Serializable
     public function then(callable $callback)
     {
         return $callback($this);
-    }
-
-    /**
-     * @return static
-     */
-    public function resetKeys()
-    {
-        return new static(array_values($this->input));
-    }
-
-    /**
-     * @return callable
-     */
-    public function callbackReturnValue()
-    {
-        return function ($value) {
-            return $value;
-        };
     }
 }

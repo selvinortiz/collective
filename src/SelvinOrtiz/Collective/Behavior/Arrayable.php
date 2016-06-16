@@ -51,4 +51,12 @@ trait Arrayable
     {
         unset($this->input[$offset]);
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->input;
+    }
 }
