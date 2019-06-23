@@ -12,14 +12,14 @@
     }
   ],
   "require": {
-    "php": ">=5.4.0"
+    "php": "^7.1"
   },
   "autoload": {
-    "psr-0": {
-      "SelvinOrtiz\\Collective": "src"
+    "psr-4": {
+      "SelvinOrtiz\\Collective\\": "src/SelvinOrtiz/Collective"
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^4.8"
+    "phpunit/phpunit": "^7.0"
   }
 }

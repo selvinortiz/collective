@@ -1,11 +1,12 @@
 <?php
 
 use SelvinOrtiz\Collective\Collective;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class CollectiveTest
  */
-class CollectiveTest extends PHPUnit_Framework_TestCase
+class CollectiveTest extends TestCase
 {
     public function test_get()
     {
@@ -176,12 +177,12 @@ class CollectiveTest extends PHPUnit_Framework_TestCase
     {
         $input = [128, 256, 512];
 
-        $this->assertEquals(3, count($this->make($input)));
+        $this->assertCount(3, $this->make($input));
     }
 
     public function test_can_be_instantiated()
     {
-        $this->assertTrue((new Collective()) instanceof Collective);
+        $this->assertInstanceOf(Collective::class, new Collective());
     }
 
     public function test_can_be_traversed()
